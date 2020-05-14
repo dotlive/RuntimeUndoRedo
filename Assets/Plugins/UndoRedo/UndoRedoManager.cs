@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -175,7 +175,7 @@ namespace UndoMethods
                 eventToFire = new Action(FireUndoStackStatusChanged);
             }
 
-            if((!m_UndoGoingOn) && (!m_RedoGoingOn))
+            if ((!m_UndoGoingOn) && (!m_RedoGoingOn))
             {
                 // If someone added an item to undo stack while there are items in redo stack.. clear the redo stack
                 m_RedoStack.Clear();
@@ -221,7 +221,7 @@ namespace UndoMethods
 
                 Type undoDataType = oUndoData.GetType();
 
-                ///If the stored operation was a transaction, perform the undo as a transaction too.
+                // If the stored operation was a transaction, perform the undo as a transaction too.
                 if (typeof (UndoRedoTransaction).Equals(undoDataType))
                 {
                     StartTransaction(oUndoData as UndoRedoTransaction);
@@ -260,7 +260,7 @@ namespace UndoMethods
 
                 Type undoDataType = oUndoData.GetType();
 
-                ///If the stored operation was a transaction, perform the redo as a transaction too.
+                // If the stored operation was a transaction, perform the redo as a transaction too.
                 if (typeof (UndoRedoTransaction).Equals(undoDataType))
                 {
                     StartTransaction(oUndoData as UndoRedoTransaction);
@@ -291,6 +291,52 @@ namespace UndoMethods
             m_RedoStack.Clear();
             FireUndoStackStatusChanged();
             FireRedoStackStatusChanged();
+        }
+
+        public T GetUndoStackTop<T>()
+        {
+            if (!HasUndoOperations)
+            {
+                return default(T);
+            }
+
+            object undoData = m_UndoStack[0];
+            Type undoDataType = undoData.GetType();
+            if (typeof(UndoRedoTransaction).Equals(undoDataType))
+            {
+                undoData = undoDataType.GetProperty("TopOperation").GetValue(undoData, null);
+                undoDataType = undoData.GetType();
+            }
+
+            if (undoData == null)
+            {
+                return default(T);
+            }
+
+            return (T)undoDataType.GetField("m_UndoData").GetValue(undoData);
+        }
+
+        public T GetRedoStackTop<T>()
+        {
+            if (!HasRedoOperations)
+            {
+                return default(T);
+            }
+
+            object undoData = m_RedoStack[0];
+            Type undoDataType = undoData.GetType();
+            if (typeof(UndoRedoTransaction).Equals(undoDataType))
+            {
+                undoData = undoDataType.GetProperty("TopOperation").GetValue(undoData, null);
+                undoDataType = undoData.GetType();
+            }
+
+            if (undoData == null)
+            {
+                return default(T);
+            }
+
+            return (T)undoDataType.GetField("m_UndoData").GetValue(undoData);
         }
 
         /// <summary>

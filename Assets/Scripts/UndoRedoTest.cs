@@ -8,9 +8,13 @@ public class UndoRedoTest : MonoBehaviour
 
     private void Start()
     {
+        var transaction = new UndoRedoTransaction();
         SetColor(Color.red);
         SetColor(Color.green);
         SetColor(Color.blue);
+
+        var top = UndoRedoManager.Instance.GetUndoStackTop<Color>();
+        Debug.LogError(top.ToString());
 
         // CreateCube(Cube);
     }

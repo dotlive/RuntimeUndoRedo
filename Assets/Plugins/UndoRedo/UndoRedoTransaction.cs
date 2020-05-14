@@ -21,6 +21,19 @@ namespace UndoMethods
             get { return m_UndoRedoOperations.Count; }
         }
 
+        public IUndoRedoRecord TopOperation
+        {
+            get
+            {
+                if (OperationsCount == 0)
+                {
+                    return null;
+                }
+
+                return m_UndoRedoOperations[0];
+            }
+        }
+
         public UndoRedoTransaction(string name = "")
         {
             m_Name = name;
@@ -34,12 +47,37 @@ namespace UndoMethods
 
         public void AddUndoRedoOperation(IUndoRedoRecord operation)
         {
-            m_UndoRedoOperations.Insert(0, operation);
+            m_UndoRedoOperations.Push(operation);
         }
 
-        public void Execute()
+        public void Execute(ExecuteType et)
         {
-            m_UndoRedoOperations.ForEach((a) => a.Execute());
+            switch (et)
+            {
+                case ExecuteType.TopOnly:
+                    RunByIndex(0, et);
+                    break;
+
+                case ExecuteType.BottomOnly:
+                    RunByIndex(m_UndoRedoOperations.Count - 1, et);
+                    break;
+
+                default:
+                    m_UndoRedoOperations.ForEach((a) => a.Execute(et));
+                    break;
+            }
+        }
+
+        protected bool RunByIndex(int index, ExecuteType et)
+        {
+            if (index < 0 || index >= OperationsCount)
+            {
+                return false;
+            }
+
+            m_UndoRedoOperations[index].Execute(et);
+
+            return true;
         }
     }
 }

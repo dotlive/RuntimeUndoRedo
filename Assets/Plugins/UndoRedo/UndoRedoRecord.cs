@@ -34,7 +34,7 @@ namespace UndoMethods
             m_Description = description;
         }
 
-        public void Execute()
+        public void Execute(ExecuteType et)
         {
             Logger.LogFormat("Undo/redo operation {0} with data {1} - {2}", m_Operation, m_UndoData, m_Description);
             m_Operation(m_UndoData);
