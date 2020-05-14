@@ -1,15 +1,10 @@
-//============================================================
-// Project: RuntimeUndoRedo
-// Author: Zoranner@ZORANNER
-// Datetime: 2018-10-18 17:55:37
-//============================================================
-
 using System.Collections.Generic;
 
 namespace UndoMethods
 {
     /// <summary>
-    /// 将列表用作堆栈的扩展方法
+    /// Extension methods which allow a List to be used as a stack. This was created as we need to be able to manipulate the stack size dynamically
+    /// which is not allowed by the Stack class
     /// </summary>
     public static class ListStackExtensions
     {
@@ -18,9 +13,9 @@ namespace UndoMethods
             list.Insert(0, item);
         }
 
-        public static IUndoRedoRecord Pop(this List<IUndoRedoRecord> list)
+        public static IUndoRedoRecord Pop(this  List<IUndoRedoRecord> list)
         {
-            var ret = list[0];
+            IUndoRedoRecord ret = list[0];
             list.RemoveAt(0);
             return ret;
         }
